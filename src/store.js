@@ -1,10 +1,15 @@
-import { createStore, compose, applyMiddleware } from 'redux';
-import createHistory from 'history/createBrowserHistory';
-import { routerMiddleware } from 'react-router-redux';
+import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
+//import createHistory from 'history/createBrowserHistory';
+import {
+  routerForBrowser,
+  initializeCurrentLocation
+} from 'redux-little-router';
 import createSagaMiddleware from 'redux-saga';
+//import thunk from 'redux-thunk';
+//import promiseMiddleware from 'redux-promised'
 import { reactReduxFirebase } from 'react-redux-firebase';
 import firebase from 'firebase';
-import { reduxFirestore } from 'redux-firestore';
+import { reduxFirestore, getFirestore } from 'redux-firestore';
 import 'firebase/firestore';
 
 import {
@@ -12,16 +17,29 @@ import {
   firestore as fsConfig,
   rrFirebase as rrfbConfig
 } from './config';
-import rootReducer from './rootReducer.js';
-//import sagas from './sagas'
+import routes from './routes';
+import reducers from './reducers';
+import sagas from './sagas';
 
 export default (initialState = {}) => {
   // using browser history
-  const history = createHistory();
+  //const history = createHistory();
+  const {
+    reducer: router,
+    enhancer,
+    middleware: routerMiddleware
+  } = routerForBrowser({ routes });
 
-  const middleware = [createSagaMiddleware(), routerMiddleware(history)];
+  const sagaMiddleware = createSagaMiddleware();
 
-  const enhancers = [];
+  const middleware = [
+    //thunk.withExtraArgument(getFirestore),
+    routerMiddleware,
+    sagaMiddleware
+    //promiseMiddleware,
+  ];
+
+  const enhancers = [enhancer];
 
   firebase.initializeApp(fbConfig);
   const firestore = firebase.firestore();
@@ -33,7 +51,7 @@ export default (initialState = {}) => {
   // Add the reducer to your store on the `router` key
   // Also apply our middleware for navigating
   const store = createStore(
-    rootReducer,
+    combineReducers({ router, ...reducers }),
     initialState,
     composeEnhancers(
       //compose(
@@ -43,6 +61,13 @@ export default (initialState = {}) => {
       ...enhancers
     )
   );
+
+  const initialLocation = store.getState().router;
+  if (initialLocation) {
+    store.dispatch(initializeCurrentLocation(initialLocation));
+  }
+
+  sagaMiddleware.run(sagas, getFirestore);
 
   return store;
 };

@@ -1,13 +1,14 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { fromJS } from 'immutable';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Fragment } from 'redux-little-router';
 
 import createStore from '../store';
-import Header from '../components/Header';
+import Header from '../containers/Header';
 import Home from '../containers/Home';
 import Vizzes from '../containers/Vizzes';
 import Builder from '../containers/Builder';
+import Overlay from '../containers/Overlay';
 
 let initialState;
 
@@ -24,13 +25,28 @@ const store = createStore(initialState);
 
 export default () => (
   <Provider store={store}>
-    <Router>
-      <div className="relative">
+    <Fragment forRoute="/">
+      <React.Fragment>
         <Header />
-        <Route exact path="/" component={Home} />
-        <Route path="/vizzes" component={Vizzes} />
-        <Route path="/new" component={Builder} />
-      </div>
-    </Router>
+
+        <Fragment forRoute="/">
+          <Home />
+        </Fragment>
+
+        <Fragment forRoute="/vizzes">
+          <React.Fragment>
+            <Fragment forRoute="/:vizid">
+              <Builder />
+            </Fragment>
+
+            <Fragment forRoute="/">
+              <Vizzes />
+            </Fragment>
+          </React.Fragment>
+        </Fragment>
+
+        <Overlay />
+      </React.Fragment>
+    </Fragment>
   </Provider>
 );

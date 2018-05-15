@@ -20,6 +20,7 @@ const enhance = compose(
     onSubmit: props => event => {
       event.preventDefault();
       if (!isLoaded(props.auth) || isEmpty(props.auth)) return false;
+      console.log('auth', props.auth);
       const title = event.target[1].value;
       props.createNewViz(props.auth.uid, title);
     }
@@ -27,7 +28,7 @@ const enhance = compose(
 );
 
 const NewViz = ({ handleClose, onSubmit }) => (
-  <div className="mw6 ba db center shadow-5">
+  <div className="mw6 ba db center shadow-5 z-999">
     <h1 className="f4 ttu bg-near-black white mv0 pv2 ph3 w-100 inline-flex items-center justify-between">
       <span className="dib flex">Title of New Viz</span>
       <a

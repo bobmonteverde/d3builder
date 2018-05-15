@@ -4,6 +4,7 @@ import { firestoreConnect, firebaseConnect } from 'react-redux-firebase';
 import { compose, withHandlers } from 'recompose';
 
 import Editors from '../components/Editors';
+import Preview from '../components/Preview';
 
 const mapStateToProps = state => ({
   auth: state.firebase.auth,
@@ -20,15 +21,24 @@ const enhance = compose(
   connect(mapStateToProps),
   withHandlers({
     updateViz: ({ firestore, firebase, vizid }) => (field, val) => {
-      console.log('Builder updateViz', field, val);
-      firestore.update({ collection: 'vizzes', doc: vizid }, { [field]: val });
+      //console.log('Builder updateViz', field, val);
+      firestore.update(
+        { collection: 'vizzes', doc: vizid },
+        {
+          [field]: val,
+          lastUpdate: firestore.FieldValue.serverTimestamp()
+        }
+      );
     }
   })
 );
 
-const Builder = ({ vizid, viz, updateViz }) => (
+const Builder = ({ viz = {}, vizid, updateViz }) => (
   <div className="relative">
     <Editors vizid={vizid} updateViz={updateViz} viz={viz} />
+    <div className="">
+      <Preview js={viz.js} css={viz.css} html={viz.html} />
+    </div>
   </div>
 );
 

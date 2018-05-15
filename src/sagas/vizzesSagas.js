@@ -14,7 +14,7 @@ function* createNewVizSaga(getFirestore, { payload }) {
     const now = firestore.FieldValue.serverTimestamp();
     const vizdoc = yield firestore.add('vizzes', {
       title: payload.title,
-      createdBy: '/users/' + payload.uid,
+      createdBy: 'users/' + payload.uid,
       html: '',
       css: '',
       js: '',

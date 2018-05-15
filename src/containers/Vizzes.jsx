@@ -7,20 +7,20 @@ import { Link } from 'redux-little-router';
 
 const enhance = compose(
   firestoreConnect(['vizzes']),
+  connect(({ firestore }) => ({
+    vizzes: firestore.ordered.vizzes
+  })),
   withHandlers({
     renderList: ({ vizzes = [] }) => () =>
-      vizzes.map((vis, i) => (
-        <li className="lh-copy pv3 ph5 ba bl-0 bvt-0 br-0 b---">
-          <Link href="/vizzes/UNFzxFTm0AuTsvEyCv7D">{vis.title}</Link>
+      vizzes.map((viz, i) => (
+        <li key={viz.id} className="lh-copy pv2 ph5 ba bl-0 bt-0 br-0 b---">
+          <Link href={`/vizzes/${viz.id}`} className="link dim fw7 black-90">
+            {viz.title}
+          </Link>
         </li>
       ))
-  }),
-  connect(({ firestore }) => ({
-    vizzes: firestore.vizzes
-  }))
+  })
 );
-const Vizzes = ({ vizzes = [], renderList }) => (
-  <ul className="list">{renderList()}</ul>
-);
+const Vizzes = ({ renderList }) => <ul className="list">{renderList()}</ul>;
 
 export default enhance(Vizzes);

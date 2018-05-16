@@ -4,6 +4,7 @@ import 'brace/mode/javascript';
 import 'brace/mode/css';
 import 'brace/mode/html';
 import 'brace/theme/github';
+import 'brace/ext/language_tools';
 
 const Editor = ({
   width = '100%',
@@ -15,7 +16,7 @@ const Editor = ({
   <AceEditor
     theme="github"
     onChange={handleChange}
-    editorProps={{ $blockScrolling: true }}
+    editorProps={{ $blockScrolling: Infinity }}
     showPrintMargin={false}
     mode={mode}
     width={width}

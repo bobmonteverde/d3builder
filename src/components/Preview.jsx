@@ -3,7 +3,7 @@ import React from 'react';
 const D3_CDN = 'https://d3js.org/d3.v5.min.js';
 
 const Preview = ({ js, css, html }) => (
-  <div>
+  <div className="z-3 w-100 h-100">
     <iframe
       //ref='preview'
       title="Viz Preview"

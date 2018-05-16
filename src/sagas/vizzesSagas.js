@@ -1,4 +1,4 @@
-import { takeLatest, fork, put } from 'redux-saga/effects';
+import { throttle, fork, put } from 'redux-saga/effects';
 import { push } from 'redux-little-router';
 import {
   constants as vizzesConstants,
@@ -30,7 +30,8 @@ function* createNewVizSaga(getFirestore, { payload }) {
 }
 
 function* watchVizzesEvents(getFirestore) {
-  yield takeLatest(
+  yield throttle(
+    500,
     vizzesConstants.CREATE_NEW_VIZ,
     createNewVizSaga,
     getFirestore
